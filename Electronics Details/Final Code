@@ -1,0 +1,121 @@
+from machine import Pin, I2C, PWM
+import ssd1306
+import time
+import neopixel
+
+# OLED setup
+i2c = I2C(0, scl=Pin(22), sda=Pin(21))
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+
+p1 = Pin(25,Pin.IN,Pin.PULL_UP)
+p2 = Pin(26,Pin.IN,Pin.PULL_UP)
+p3 = Pin(27,Pin.IN,Pin.PULL_UP)
+p4 = Pin(5,Pin.IN,Pin.PULL_UP)
+p5 = Pin(12,Pin.IN,Pin.PULL_UP)
+p6 = Pin(13,Pin.IN,Pin.PULL_UP)
+np = neopixel.NeoPixel(Pin(14), 8)
+servo = PWM(Pin(15),freq=50)
+pb = Pin(19,Pin.IN,Pin.PULL_UP)
+ir1 = Pin(34, Pin.IN)
+ir2 = Pin(35, Pin.IN)
+
+
+while True:
+
+    score = 0
+    
+    val1 = p1.value()
+    val2 = p2.value()
+    val3 = p3.value()
+    val4 = p4.value()
+    val5 = p5.value()
+    val6 = p6.value()
+
+
+    # -------------------------
+    # Add score only when circuit changes
+    # complete(0) -> incomplete(1)
+    # -------------------------
+    if val1 == 1:
+        score += 1
+        
+    if val2 == 1:
+        score += 1
+        
+    if val3 == 1:
+        score += 1
+        
+    if val4 == 1:
+        score += 1
+        
+    if val5 == 1:
+        score += 1
+        
+    if val5 == 1:
+        score += 1
+
+    # -------------------------
+    # Gutter Message Temporary
+    # -------------------------
+    if ir1.value() == 0 or ir2.value() == 0:
+        oled.fill(0)
+        oled.text("GUTTER!", 25, 28)
+        oled.show()
+        time.sleep(3)
+
+    # -------------------------
+    # Show Score
+    # -------------------------
+    oled.fill(0)
+    oled.text("Score:", 15, 20)
+    oled.text(str(score), 60, 38)
+    oled.show()
+
+    time.sleep(0.1)
+    
+#NeoPixel
+
+    if val1 == 1:
+       score = score + 1
+       
+    if val2 == 1:
+        score = score + 1
+        
+    if val3 == 1:
+        score = score + 1
+        
+    if val4 == 1:
+        score = score + 1
+        
+    if val5 == 1:
+        score = score + 1
+        
+    if val6 == 1:
+        score = score + 1
+    
+        
+    for i in range(8):
+        if i < score:
+            np[i] = (0, 100, 0)
+            np.write()
+        else:
+            np[i] = (0, 100, 0)
+            np.write()
+            
+#ResetPins
+    
+    pbreset = pb.value()
+    
+    if pb.value() == 0:
+        
+        for duty in range(95, 25, -5):
+            servo.duty(duty)
+            time.sleep(0.5)
+        
+        time.sleep(1.5)
+        
+        for duty in range(25, 95, 5):
+            servo.duty(duty)
+            time.sleep(0.5)
+    
+    
